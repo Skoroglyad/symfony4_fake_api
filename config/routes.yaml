@@ -1,0 +1,10 @@
+admin:
+    resource: "./routes/admin.yml"
+    prefix:   /
+
+
+api_client:
+    type : rest
+    resource :  "routes/client_rest_routing.yml"
+    prefix : /api
+    options: { i18n: false }

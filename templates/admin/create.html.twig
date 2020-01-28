@@ -1,0 +1,59 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}  Create Tariff {% endblock %}
+
+{% block body %}
+    <div style="text-align: center;">
+        <h1>Create Tariff</h1>
+        {{ form_start(form) }}
+
+        <div>
+            <div class="row">
+                <div>
+                    {{ form_label(form.title, null, {'label_attr': {'class': ' '}}) }}
+                </div>
+                <div>
+                    {{ form_widget(form.title) }}
+                </div>
+                <div class="error">
+                    {{ form_errors(form.title) }}
+                </div>
+            </div>
+            <div class="row">
+                <div>
+                    {{ form_label(form.coefficient, null, {'label_attr': {'class': ' '}}) }}
+                </div>
+                <div>
+                    {{ form_widget(form.coefficient) }}
+                </div>
+                <div class="error">
+                    {{ form_errors(form.coefficient) }}
+                </div>
+            </div>
+            <div class="row">
+                <div>
+                    {{ form_label(form.option, null, {'label_attr': {'class': ''}}) }}
+                </div>
+                <div>
+                    {{ form_widget(form.option) }}
+                </div>
+            </div>
+        </div>
+
+        <div>
+            {{ form_widget(form.submit, {'attr': {'class': 'blue_solid_button'}}) }}
+        </div>
+
+        {{ form_rest(form) }}
+        {{ form_end(form) }}
+    </div>
+
+    <style>
+        .error {
+            color: red;
+        }
+        .row {
+            margin-bottom: 20px;
+        }
+    </style>
+{% endblock %}

@@ -1,0 +1,9 @@
+offers:
+  type: rest
+  resource: App\Controller\ClientRestController
+  name_prefix: api_
+
+buy:
+  type: rest
+  resource: App\Controller\ClientRestController
+  name_prefix: api_
