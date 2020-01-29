@@ -1,0 +1,10 @@
+contract_create:
+  type: rest
+  resource: App\Controller\SkRestController
+  name_prefix: api_
+  methods: [POST]
+
+download:
+  type: rest
+  resource: App\Controller\SkRestController
+  name_prefix: api_

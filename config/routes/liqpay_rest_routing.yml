@@ -1,0 +1,5 @@
+form:
+  type: rest
+  resource: App\Controller\LiqPayRestController
+  name_prefix: api_
+  methods: [POST]

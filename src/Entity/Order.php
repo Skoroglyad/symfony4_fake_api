@@ -14,6 +14,7 @@ class Order
 {
     const STATUS_DRAFT = 0;
     const STATUS_PAID = 1;
+    const STATUS_READY = 2;
 
     /**
      * @ORM\Id()

@@ -4,9 +4,6 @@ namespace App\Form;
 
 use App\Entity\Order;
 use App\Entity\Tariff;
-use App\Transformer\EntityToIdObjectTransformer;
-use Doctrine\ORM\EntityManagerInterface;
-use Lexik\Bundle\FormFilterBundle\Filter\Query\QueryInterface;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;

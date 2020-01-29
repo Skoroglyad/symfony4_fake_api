@@ -7,7 +7,7 @@ namespace App\Transformer;
 use App\Entity\Order;
 use League\Fractal\TransformerAbstract;
 
-class OrderBuyTransformer extends TransformerAbstract
+class OrderRequestTransformer extends TransformerAbstract
 {
     /**
      * @param Order $order
@@ -16,9 +16,9 @@ class OrderBuyTransformer extends TransformerAbstract
     public function transform(Order $order)
     {
         return [
-            'order_id' => $order->getId(),
+            'tariff_id' => $order->getTariff()->getId(),
             'last_name' => $order->getLastName(),
-            'order_email' => $order->getEmail()
+            'email' => $order->getEmail()
         ];
     }
 

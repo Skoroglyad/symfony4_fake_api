@@ -8,3 +8,16 @@ api_client:
     resource :  "routes/client_rest_routing.yml"
     prefix : /api
     options: { i18n: false }
+
+
+api_sk:
+    type : rest
+    resource :  "routes/sk_rest_routing.yml"
+    prefix : /sk/api
+    options: { i18n: false }
+
+api_liqpay:
+    type : rest
+    resource :  "routes/liqpay_rest_routing.yml"
+    prefix : /pay/api
+    options: { i18n: false }
