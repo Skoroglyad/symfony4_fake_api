@@ -7,6 +7,7 @@ namespace App\Controller;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
+use FOS\RestBundle\Controller\Annotations\View as RestView;
 
 
 class LiqPayRestController extends AbstractController
@@ -14,6 +15,8 @@ class LiqPayRestController extends AbstractController
     /**
      * @param Request $request
      * @return JsonResponse
+     *
+     * @RestView()
      */
     public function postFormAction(Request $request)
     {

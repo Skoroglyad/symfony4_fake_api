@@ -7,10 +7,18 @@ buy:
   type: rest
   resource: App\Controller\ClientRestController
   name_prefix: api_
-  methods: [POST]
 
 payment_receive:
   type: rest
   resource: App\Controller\ClientRestController
   name_prefix: api_
-  methods: [POST]
+
+policy:
+  type: rest
+  resource: App\Controller\ClientRestController
+  name_prefix: api_
+
+policies:
+  type: rest
+  resource: App\Controller\ClientRestController
+  name_prefix: api_

@@ -9,12 +9,31 @@ use Symfony\Component\Validator\Constraints as Assert;
 /**
  * @ORM\Table(name="client_order")
  * @ORM\Entity(repositoryClass="App\Repository\OrderRepository")
+ *
+ * @ORM\HasLifecycleCallbacks
  */
 class Order
 {
     const STATUS_DRAFT = 0;
     const STATUS_PAID = 1;
     const STATUS_READY = 2;
+
+    public static function getStatusList( )
+    {
+        return [
+            self::STATUS_DRAFT => 'Draft ',
+            self::STATUS_PAID => 'Paid',
+            self::STATUS_READY => 'Ready',
+        ];
+    }
+
+    /**
+     * @return string
+     */
+    public function getStatusString( )
+    {
+        return self::getStatusList()[$this->status];
+    }
 
     /**
      * @ORM\Id()
@@ -54,6 +73,11 @@ class Order
      * @ORM\Column(name="status", type="smallint", nullable=false)
      */
     private $status = self::STATUS_DRAFT;
+
+    /**
+     * @ORM\Column(name="update_date", type="datetime", nullable=false)
+     */
+    private $updateDate;
 
     /**
      * @ORM\ManyToOne(targetEntity="App\Entity\Tariff", inversedBy="orders")
@@ -179,5 +203,30 @@ class Order
     public function setTariff($tariff): void
     {
         $this->tariff = $tariff;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getUpdateDate()
+    {
+        return $this->updateDate;
+    }
+
+    /**
+     * @param mixed $updateDate
+     */
+    public function setUpdateDate($updateDate): void
+    {
+        $this->updateDate = $updateDate;
+    }
+
+    /**
+     * @ORM\PreUpdate()
+     * @ORM\PrePersist()
+     */
+    public function setUpdatedDateValue()
+    {
+        $this->updateDate = new \DateTime();
     }
 }

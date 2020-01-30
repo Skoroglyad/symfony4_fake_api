@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Entity\Order;
 use App\Entity\Tariff;
 use App\Form\TariffType;
 use Doctrine\ORM\EntityManagerInterface;
@@ -30,10 +31,29 @@ class AdminController extends AbstractController
      */
     public function indexAction()
     {
+        return $this->render('admin/index.html.twig');
+    }
+
+    /**
+     * @return \Symfony\Component\HttpFoundation\Response
+     */
+    public function getListTariffsAction()
+    {
         $tariffs = $this->em->getRepository(Tariff::class)->findAll();
 
-        return $this->render('admin/index.html.twig', [
+        return $this->render('admin/tariff.html.twig', [
             'tariffs' => $tariffs
+        ]);
+    }
+
+    /**
+     * @return \Symfony\Component\HttpFoundation\Response
+     */
+    public function getListOrdersAction()
+    {
+        $orders = $this->em->getRepository(Order::class)->findAll();
+        return $this->render('admin/order.html.twig', [
+            'orders' => $orders
         ]);
     }
 
@@ -54,11 +74,12 @@ class AdminController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             $this->em->persist($tariff);
             $this->em->flush();
-            return $this->redirectToRoute('admin_index');
+            return $this->redirectToRoute('admin_list_tariff');
         }
 
         return $this->render('admin/create.html.twig', [
-            'form' => $form->createView()
+            'form' => $form->createView(),
+            'create' => true
         ]);
     }
 
@@ -83,7 +104,7 @@ class AdminController extends AbstractController
 
         if ($form->isSubmitted() && $form->isValid()) {
             $this->em->flush();
-            return $this->redirectToRoute('admin_index');
+            return $this->redirectToRoute('admin_list_tariff');
         }
 
         return $this->render('admin/create.html.twig', [

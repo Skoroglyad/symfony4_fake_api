@@ -2,6 +2,14 @@ admin_index:
   path: /
   controller: App\Controller\AdminController::indexAction
 
+admin_list_order:
+  path: /admin/stats
+  controller: App\Controller\AdminController::getListOrdersAction
+
+admin_list_tariff:
+  path: /tariff
+  controller: App\Controller\AdminController::getListTariffsAction
+
 admin_create_tariff:
   path: /tariff/create
   controller: App\Controller\AdminController::createAction

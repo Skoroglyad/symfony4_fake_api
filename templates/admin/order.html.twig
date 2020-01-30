@@ -1,0 +1,38 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}  Admin {% endblock %}
+
+{% block body %}
+    <div style="text-align: center;">
+
+        {% if orders | length > 0  %}
+            <table style="width:100%">
+                <tr>
+                    <th>id</th>
+                    <th>amount</th>
+                    <th>tariff title</th>
+                    <th>date/time</th>
+                    <th>status</th>
+                </tr>
+                {% for order in orders  %}
+                    <tr>
+                        <td>{{ order.id }}</td>
+                        <td>{{ order.amount }}</td>
+                        <td>{{ order.tariff.title }}</td>
+                        <td>{{ order.updateDate | date("d-m-Y H:i:s") }}</td>
+                        <td>{{ order.statusString }}</td>
+                    </tr>
+                {% endfor %}
+            </table>
+        {% else %}
+           <h1> No data</h1>
+        {% endif %}
+    </div>
+
+    <style>
+        table, th, td {
+            border: 1px solid black;
+        }
+    </style>
+
+{% endblock %}

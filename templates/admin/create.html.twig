@@ -4,7 +4,7 @@
 
 {% block body %}
     <div style="text-align: center;">
-        <h1>Create Tariff</h1>
+        <h1>{% if create is defined %}  Create Tariff {% else %} Edit Tariff {% endif %} </h1>
         {{ form_start(form) }}
 
         <div>

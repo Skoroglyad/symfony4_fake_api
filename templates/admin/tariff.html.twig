@@ -1,0 +1,41 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}  Admin {% endblock %}
+
+{% block body %}
+    <div style="text-align: center;">
+
+        {% if tariffs | length > 0  %}
+            <table style="width:100%">
+                <tr>
+                    <th>id</th>
+                    <th>title</th>
+                    <th>coefficient</th>
+                    <th>Option</th>
+                    <th>Edit tariff</th>
+                </tr>
+                {% for tariff in tariffs  %}
+                    <tr>
+                        <td>{{ tariff.id }}</td>
+                        <td>{{ tariff.title }}</td>
+                        <td>{{ tariff.coefficient }}</td>
+                        <td>{{ tariff.option }}</td>
+                        <td><a href="{{ url('admin_edit_tariff', {'id':tariff.id} ) }}">Edit tariff</a></td>
+                    </tr>
+                {% endfor %}
+            </table>
+        {% else %}
+           <h1> No data</h1>
+        {% endif %}
+        <div>
+            <a href="{{ url('admin_create_tariff') }}">Add New Tariff</a>
+        </div>
+    </div>
+
+    <style>
+        table, th, td {
+            border: 1px solid black;
+        }
+    </style>
+
+{% endblock %}

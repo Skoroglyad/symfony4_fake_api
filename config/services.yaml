@@ -26,3 +26,6 @@ services:
 
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones
+    OldSound\RabbitMqBundle\RabbitMq\ProducerInterface: '@old_sound_rabbit_mq.check_policy_producer'
+    app.consumer.check_policy:
+        class: App\Rabbit\CheckPolicyConsumer

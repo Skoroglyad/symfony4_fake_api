@@ -10,14 +10,15 @@ use App\Form\OrderType;
 use App\Form\TariffFilterType;
 use App\Transformer\OrderLiqPayTransformer;
 use App\Transformer\OrderRequestTransformer;
+use App\Transformer\PolicyTransformer;
 use App\Transformer\TariffTransformer;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\QueryBuilder;
 use FOS\RestBundle\View\View;
 use League\Fractal\Manager;
 use Lexik\Bundle\FormFilterBundle\Filter\FilterBuilderUpdaterInterface;
+use OldSound\RabbitMqBundle\RabbitMq\ProducerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 
 use League\Fractal\Resource\Collection as FractalCollection;
@@ -37,20 +38,29 @@ class ClientRestController extends AbstractController
      */
     private $filterBuilderUpdater;
 
+    /** @var ProducerInterface */
+    private $producer;
+
     /**
      * ClientRestController constructor.
      * @param EntityManagerInterface $em
      * @param FilterBuilderUpdaterInterface $filterBuilderUpdater
+     * @param ProducerInterface $producer
      */
-    public function __construct(EntityManagerInterface $em, FilterBuilderUpdaterInterface $filterBuilderUpdater)
+    public function __construct( EntityManagerInterface $em,
+                                 FilterBuilderUpdaterInterface $filterBuilderUpdater,
+                                 ProducerInterface $producer
+                                )
     {
         $this->em = $em;
         $this->filterBuilderUpdater = $filterBuilderUpdater;
+        $this->producer = $producer;
     }
 
     /**
      * @param Request $request
      * @return mixed
+     *
      * @RestView()
      */
     public function getOffersAction(Request $request)
@@ -73,7 +83,9 @@ class ClientRestController extends AbstractController
 
     /**
      * @param Request $request
-     * @return View|\Symfony\Component\HttpFoundation\Response
+     * @return View
+     *
+     * @RestView()
      */
     public function postBuyAction(Request $request)
     {
@@ -91,17 +103,90 @@ class ClientRestController extends AbstractController
 
             $this->sendDataToSk($order);
             $this->sendDataToLiqPay($order);
+            $this->getPolicyFrommSk($order->getSkId());
 
-            //todo
-//            Добавляем в очередь задачу на проверку pdf полиса
+            //відправка в чергу
+//            $this->producer->publish($order->getId());
 
             sleep(10);
             $order->setStatus(Order::STATUS_READY);
             $this->em->flush();
 
-            return View::create('Ok', 200);
+            $this->sendPolicyToClient($order);
+
+            return View::create('Insurance policy has been sent ', 200);
         }
         return View::create($form, 400);
+    }
+
+    /**
+     * @param Request $request
+     * @return View
+     * @throws \Exception
+     *
+     * @RestView()
+     */
+    public function postPaymentReceiveAction(Request $request)
+    {
+        $parameters = $request->attributes->all()['data'];
+        $data = [
+            'order_id' => $parameters['order_id'],
+            'amount' => $parameters['amount'],
+            'payment_id' => random_int(1, 100)
+        ];
+
+        return View::create($data, 200);
+    }
+
+    /**
+     * @param Request $request
+     * @return array
+     *
+     * @RestView()
+     */
+    public function getPolicyAction(Request $request)
+    {
+        $orders = $this->em->getRepository(Order::class)->findAll();
+        $fractal = new Manager();
+        $resource = new FractalCollection($orders, new PolicyTransformer());
+        return $fractal->createData($resource)->toArray();
+    }
+
+    /**
+     * @param Request $request
+     * @param $id
+     * @return array|View
+     *
+     * @RestView()
+     */
+    public function getPoliciesAction(Request $request, $id)
+    {
+        $order = $this->em->getRepository(Order::class)->findOneBy(['id'=>$id]);
+        if (!$order) {
+            return  View::create('Policy with id '. $id . ' does not exist', 400);
+        }
+        $fractal = new Manager();
+        $resource = new FractalItem($order, new PolicyTransformer());
+        return $fractal->createData($resource)->toArray();
+    }
+
+    /**
+     * @param $order
+     */
+    private function sendPolicyToClient(&$order)
+    {
+        //1. підключаємо окрмий сервіс для відправки листів
+        //2. в сервісі реалізований SwiftMailer
+        //3. прикріплюємо pdf, генеруємо лист
+        //4. кидаємо в чергу на відправку
+    }
+
+    /**
+     * @param $sk_id
+     */
+    private function getPolicyFrommSk($sk_id)
+    {
+        $this->forward('App\Controller\SkRestController::getDownloadAction', ['sk_id'=>$sk_id]);
     }
 
     /**
@@ -112,6 +197,7 @@ class ClientRestController extends AbstractController
         $fractal = new Manager();
         $resource = new FractalItem($order, new OrderRequestTransformer());
         $parameters = $fractal->createData($resource)->toArray();
+
         $response = $this->forward('App\Controller\SkRestController::postContractCreateAction', $parameters);
         $content = json_decode($response->getContent(), true);
 
@@ -127,6 +213,7 @@ class ClientRestController extends AbstractController
         $fractal = new Manager();
         $resource = new FractalItem($order, new OrderLiqPayTransformer());
         $liqPayParameters = $fractal->createData($resource)->toArray();
+
         $liqPayResponse = $this->forward('App\Controller\LiqPayRestController::postFormAction', $liqPayParameters);
         $liqPayContent = json_decode($liqPayResponse->getContent(), true);
 
@@ -135,21 +222,5 @@ class ClientRestController extends AbstractController
             $order->setStatus(Order::STATUS_PAID);
             $this->em->flush();
         }
-    }
-
-    /**
-     * @param Request $request
-     * @return JsonResponse
-     * @throws \Exception
-     */
-    public function postPaymentReceiveAction(Request $request)
-    {
-        $parameters = $request->attributes->all()['data'];
-        $data = [
-            'order_id' => $parameters['order_id'],
-            'amount' => $parameters['amount'],
-            'payment_id' => random_int(1, 100)
-        ];
-        return new JsonResponse($data, 200);
     }
 }

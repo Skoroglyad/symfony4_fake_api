@@ -28,14 +28,10 @@ class SkRestController extends AbstractController
     /**
      * @param $sk_id
      * @return JsonResponse
-     * @throws \Exception
      */
     public function getDownloadAction($sk_id)
     {
-        $data = [
-            'status' => 'success',
-            'sk_id' => random_int(1, 100)
-        ];
-        return new JsonResponse($data, 200);
+        //отримання pdf
+        return new JsonResponse('PDF Received', 200);
     }
 }
