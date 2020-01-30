@@ -1,4 +1,4 @@
-1. set paswword for DB
+1. set password for DB in .env
 DATABASE_URL="mysql://root:password@127.0.0.1:3306/app"
 
 2.  php bin/console doctrine:database:create
